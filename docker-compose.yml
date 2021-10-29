@@ -3,9 +3,9 @@ version: '3'
 
 services:
 
-  courtage_db:
+  db:
     image: mysql:5.7
-    container_name: courtage_db
+    container_name: db
     restart: always
     ports:
       - "3306:3306"
@@ -15,14 +15,14 @@ services:
     volumes:
       - /volumes/mysql:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ''
-      MYSQL_DATABASE: reseau_courtage
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: database_name
       MYSQL_USER: hamza
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
       MYSQL_PASSWORD: ''
 
 
-  courtage_webserver:
+  webserver:
     image: nginx:alpine
     container_name: webserver
     restart: unless-stopped
@@ -35,22 +35,22 @@ services:
       - ./:/var/www/html
       - ./volumes/webserver/reseau.conf:/etc/nginx/conf.d/default.conf:rw
     depends_on:
-      - courtage_db
-      - courtage_app
+      - db
+      - app
 
 
-  courtage_app:
+  app:
     build:
       context: .
       dockerfile: dockerfile
-    container_name: reseau_courtage
+    container_name: app
     restart: unless-stopped
     volumes:
       - ./:/var/www/html
     networks:
       - reseau
     depends_on:
-      - courtage_db
+      - db
     ports:
       - '9000:9000'
 
