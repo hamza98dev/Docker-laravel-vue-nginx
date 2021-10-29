@@ -4,6 +4,9 @@
 
 2) Verify credentials of mysql container in docker-compose.yml
 
-3)verify nginx conf
+3) verify nginx conf
 
-and docker-compose up
+4) Change DB_HOST to db in docker-compose 
+
+
+and docker-compose up 🎆🎆🎆🎆🎆🎆🎆
