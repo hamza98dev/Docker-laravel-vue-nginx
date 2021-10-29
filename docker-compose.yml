@@ -1,0 +1,61 @@
+#docker compose version
+version: '3'
+
+services:
+
+  courtage_db:
+    image: mysql:5.7
+    container_name: courtage_db
+    restart: always
+    ports:
+      - "3306:3306"
+    tty: true
+    networks:
+      - reseau
+    volumes:
+      - /volumes/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ''
+      MYSQL_DATABASE: reseau_courtage
+      MYSQL_USER: hamza
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_PASSWORD: ''
+
+
+  courtage_webserver:
+    image: nginx:alpine
+    container_name: webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - '8000:80'
+    networks:
+      - reseau
+    volumes:
+      - ./:/var/www/html
+      - ./volumes/webserver/reseau.conf:/etc/nginx/conf.d/default.conf:rw
+    depends_on:
+      - courtage_db
+      - courtage_app
+
+
+  courtage_app:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: reseau_courtage
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - reseau
+    depends_on:
+      - courtage_db
+    ports:
+      - '9000:9000'
+
+
+#Docker Networks
+networks:
+  reseau:
+    driver: bridge
